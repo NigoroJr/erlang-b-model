@@ -1,0 +1,6 @@
+*.swp
+*.swo
+Session.vim
+
+build/*
+!build/.keep
