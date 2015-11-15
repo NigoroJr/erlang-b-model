@@ -22,15 +22,18 @@ Advisor::Advisor(const Graph& nodes,
 
 // Copy constructor
 Advisor::Advisor(const Advisor& other)
-    : lambda{lambda}
-    , duration_mean{duration_mean}
+    : lambda{other.lambda}
+    , duration_mean{other.duration_mean}
     , nodes{other.nodes}
+    , u_dist{other.u_dist}
+    , arrival_dist{other.arrival_dist}
+    , duration_dist{other.duration_dist}
 { }
 
 // Move constructor
 Advisor::Advisor(Advisor&& other)
-    : lambda{std::move(lambda)}
-    , duration_mean{std::move(duration_mean)}
+    : lambda{std::move(other.lambda)}
+    , duration_mean{std::move(other.duration_mean)}
     , nodes{std::move(other.nodes)}
     , rgen{std::move(other.rgen)}
     , u_dist{std::move(other.u_dist)}
@@ -45,7 +48,12 @@ Advisor::~Advisor()
 // Assignment operator
 Advisor&
 Advisor::operator=(const Advisor& other) {
+    lambda = other.lambda;
+    duration_mean = other.duration_mean;
     nodes = other.nodes;
+    u_dist = other.u_dist;
+    arrival_dist = other.arrival_dist;
+    duration_dist = other.duration_dist;
     return *this;
 }
 
@@ -55,6 +63,7 @@ Advisor::operator=(Advisor&& other) {
     lambda = std::move(other.lambda);
     duration_mean = std::move(other.duration_mean);
     nodes = std::move(other.nodes);
+    rgen = std::move(other.rgen);
     u_dist = std::move(other.u_dist);
     arrival_dist = std::move(other.arrival_dist);
     duration_dist = std::move(other.duration_dist);
