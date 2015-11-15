@@ -17,6 +17,12 @@ completed connections (`-t` or `--total`), the blocking probability of the
 network is calculated. The initial 10% of the connections are ignored in order
 to observe the steady state behavior.
 
+Wavelength conversion capability can be enabled (with `-c` or `--converter`)
+to allow using an empty wavelength when a connection is initiated. It is
+assumed that there are enough converters (i.e. however many wavelengths there
+are) in each node to accommodate converting any wavelength request. This
+simplifies the search algorithm.
+
 ## Building
 Boost Graph Library is used for this project. Boost unit testing framework is
 also used for unit testing.
@@ -64,6 +70,13 @@ The input file for this network is written as:
 The first two numbers are the number of vertices (nodes) and the number of
 edges, respectively. The `misc/make_connections.rb` script is a utility script
 to generate random vertices and edges.
+
+Another input file included is shown in the following figure:
+
+![Two-node network](./samples/two_nodes.png)
+
+In this network, connections are always between the same two nodes. Thus, the
+Erlang B formula can be used to verify the results of the simulation.
 
 The program is invoked with:
 
