@@ -8,34 +8,30 @@ const Link::wavelength_t Link::NONE = 0;
 /* Constructors, Destructor, and Assignment operators {{{ */
 // Default constructor
 Link::Link()
-    : id_{0}
 { }
 
-Link::Link(const id_t id, const unsigned num_links, bool has_converter)
-    : id_{id}
-    , has_converter_{has_converter}
+Link::Link(const unsigned num_links, bool has_converter)
+    : has_converter_{has_converter}
 {
     for (unsigned i = 1; i <= num_links; i++) {
         wavelengths_.insert(static_cast<wavelength_t>(i));
     }
 }
 
-Link::Link(const id_t id, const int num_links, bool has_converter)
-    : Link(id, static_cast<unsigned>(num_links), has_converter)
+Link::Link(const int num_links, bool has_converter)
+    : Link(static_cast<unsigned>(num_links), has_converter)
 { }
 
 // Copy constructor
 Link::Link(const Link& other)
-    : id_{other.id_}
-    , wavelengths_{other.wavelengths_}
+    : wavelengths_{other.wavelengths_}
     , used_{other.used_}
     , has_converter_{other.has_converter_}
 { }
 
 // Move constructor
 Link::Link(Link&& other)
-    : id_{std::move(other.id_)}
-    , wavelengths_{std::move(other.wavelengths_)}
+    : wavelengths_{std::move(other.wavelengths_)}
     , used_{std::move(other.used_)}
     , has_converter_{std::move(other.has_converter_)}
 { }
@@ -47,7 +43,6 @@ Link::~Link()
 // Assignment operator
 Link&
 Link::operator=(const Link& other) {
-    id_ = other.id_;
     wavelengths_ = other.wavelengths_;
     used_ = other.used_;
     has_converter_ = other.has_converter_;
@@ -57,7 +52,6 @@ Link::operator=(const Link& other) {
 // Move assignment operator
 Link&
 Link::operator=(Link&& other) {
-    id_ = std::move(other.id_);
     wavelengths_ = std::move(other.wavelengths_);
     used_ = std::move(other.used_);
     has_converter_ = std::move(other.has_converter_);

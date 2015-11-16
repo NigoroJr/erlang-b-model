@@ -25,9 +25,16 @@ struct EdgeFilter {
 
     template<typename Edge>
     bool operator()(const Edge& e) const {
-        const Link& src = g[boost::source(e, g)];
-        const Link& tgt = g[boost::target(e, g)];
-        return src.can_use(wl) && tgt.can_use(wl);
+        const auto& src = boost::source(e, g);
+        const auto& tgt = boost::target(e, g);
+        typename boost::graph_traits<Graph>::edge_descriptor edge;
+        bool found;
+        std::tie(edge, found) = boost::edge(src, tgt, g);
+        if (found) {
+            const Link& link = g[edge];
+            return link.can_use(wl);
+        }
+        return false;
     }
 
     Graph g;
@@ -39,7 +46,7 @@ public:
     using event_t = double;
 
     using Graph = boost::adjacency_list<boost::vecS, boost::vecS,
-          boost::undirectedS, Link, boost::no_property>;
+          boost::undirectedS, boost::no_property, Link>;
     using vertex_t = boost::graph_traits<Graph>::vertex_descriptor;
     using edge_t = boost::graph_traits<Graph>::edge_descriptor;
 
@@ -69,7 +76,7 @@ public:
     operator=(Advisor&& other);
     /* }}} */
 
-    std::pair<Link::id_t, Link::id_t>
+    std::pair<vertex_t, vertex_t>
     get_nodes();
 
     /**
@@ -95,29 +102,29 @@ public:
      * \return the path and the wavelength available between a and b.
      *         Wavelength is Link::NONE if no path is available.
      */
-    std::pair<std::vector<vertex_t>, Link::wavelength_t>
-    path_between(Link::id_t a, Link::id_t b);
+    std::pair<std::vector<edge_t>, Link::wavelength_t>
+    path_between(vertex_t a, vertex_t b);
 
     /**
      * \return true if there is a path between nodes a and b, false otherwise.
      */
     bool
-    has_path_between(Link::id_t a, Link::id_t b);
+    has_path_between(vertex_t a, vertex_t b);
 
     /**
      * Initiates a connection between nodes a and b.
      *
      * \return the path and the wavelength that the two nodes are using.
      */
-    std::pair<std::vector<vertex_t>, Link::wavelength_t>
-    make_connection(Link::id_t a, Link::id_t b);
+    std::pair<std::vector<edge_t>, Link::wavelength_t>
+    make_connection(vertex_t a, vertex_t b);
 
     /**
      * Finishes the connection between nodes a and b using the given
      * wavelength.
      */
     void
-    remove_connection(const std::vector<vertex_t>& path,
+    remove_connection(const std::vector<edge_t>& path,
                       const Link::wavelength_t wl);
 
 private:
@@ -126,7 +133,7 @@ private:
     Graph nodes;
     std::random_device rd;
     std::mt19937 rgen{rd()};
-    std::uniform_int_distribution<Link::id_t> u_dist;
+    std::uniform_int_distribution<vertex_t> u_dist;
     std::exponential_distribution<Advisor::event_t> arrival_dist;
     std::exponential_distribution<Advisor::event_t> duration_dist;
 };

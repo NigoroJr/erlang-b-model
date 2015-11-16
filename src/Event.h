@@ -28,7 +28,7 @@ struct Event {
           const Advisor::vertex_t dst,
           Type type,
           event_t time,
-          std::vector<Advisor::vertex_t> path,
+          std::vector<Advisor::edge_t> path,
           Link::wavelength_t wl = WL_UNSET);
 
     // Copy constructor
@@ -63,7 +63,7 @@ struct Event {
     Advisor::vertex_t dst;
     Type type;
     event_t time;
-    std::vector<Advisor::vertex_t> path;
+    std::vector<Advisor::edge_t> path;
     Link::wavelength_t wavelength;
 };
 

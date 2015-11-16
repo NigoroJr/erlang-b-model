@@ -7,15 +7,14 @@
 #include <unordered_set>
 
 BOOST_AUTO_TEST_CASE(node_ctor_test) {
-    const Link::id_t id = 42;
-    Link l1{id, 5};
+    Link l1{5};
     BOOST_CHECK_EQUAL(l1.num_wavelengths(), 5);
     BOOST_CHECK_EQUAL(l1.has_converter(), false);
 
-    Link l2{id, 3, true};
+    Link l2{3, true};
     BOOST_CHECK_EQUAL(l2.has_converter(), true);
 
-    Link l3{id, std::vector<Link::wavelength_t>{4, 8, 1, 10}};
+    Link l3{std::vector<Link::wavelength_t>{4, 8, 1, 10}};
     std::unordered_set<Link::wavelength_t> correct = {1, 4, 8, 10};
     BOOST_CHECK_EQUAL(l3.num_wavelengths(), 4);
     bool ok = l3.wavelengths() == correct;
@@ -26,14 +25,14 @@ BOOST_AUTO_TEST_CASE(node_ctor_test) {
 }
 
 BOOST_AUTO_TEST_CASE(node_can_use_test) {
-    Link link{42, std::vector<Link::wavelength_t>{1}};
+    Link link{std::vector<Link::wavelength_t>{1}};
 
     BOOST_CHECK_EQUAL(link.can_use(1), true);
     BOOST_CHECK_EQUAL(link.can_use(2), false);
 }
 
 BOOST_AUTO_TEST_CASE(node_available_wavelengths_test) {
-    Link link{42, std::vector<Link::wavelength_t>{1, 2, 3}};
+    Link link{std::vector<Link::wavelength_t>{1, 2, 3}};
 
     std::unordered_set<Link::wavelength_t> correct = {1, 2, 3};
     bool ok = link.available_wavelengths() == correct;
@@ -41,14 +40,13 @@ BOOST_AUTO_TEST_CASE(node_available_wavelengths_test) {
 }
 
 BOOST_AUTO_TEST_CASE(node_used_wavelengths_test) {
-    Link link{42, std::vector<Link::wavelength_t>{1, 2, 3}};
+    Link link{std::vector<Link::wavelength_t>{1, 2, 3}};
 
     BOOST_CHECK_EQUAL(link.used_wavelengths().empty(), true);
 }
 
 BOOST_AUTO_TEST_CASE(node_lock_test) {
-    const Link::id_t id = 42;
-    Link l1{id, std::vector<Link::wavelength_t>{5, 1, 8}};
+    Link l1{std::vector<Link::wavelength_t>{5, 1, 8}};
 
     // Can use any?
     BOOST_CHECK_EQUAL(l1.available_wavelengths().empty(), false);
@@ -77,8 +75,7 @@ BOOST_AUTO_TEST_CASE(node_lock_test) {
 }
 
 BOOST_AUTO_TEST_CASE(node_release_test) {
-    const Link::id_t id = 42;
-    Link link{id, std::vector<Link::wavelength_t>{5, 1, 8}};
+    Link link{std::vector<Link::wavelength_t>{5, 1, 8}};
 
     BOOST_REQUIRE_EQUAL(link.available_wavelengths().size(), 3);
     link.lock(5);

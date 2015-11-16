@@ -18,19 +18,15 @@ Advisor::Graph
 make_graph_from_file(std::istream& is,
                      const unsigned num_links,
                      const bool has_converter) {
-    unsigned num_vertices, num_edges;
-    is >> num_vertices >> num_edges;
+    unsigned num_edges;
+    is >> num_edges;
 
     Advisor::Graph g;
-
-    for (unsigned i = 0; i < num_vertices; i++) {
-        boost::add_vertex(Link(i, num_links, has_converter), g);
-    }
 
     unsigned a, b;
     for (unsigned i = 0; i < num_edges; i++) {
         is >> a >> b;
-        boost::add_edge(a, b, g);
+        boost::add_edge(a, b, Link(num_links, has_converter), g);
     }
 
     return g;
@@ -98,7 +94,7 @@ simulate(Advisor& advisor,
         switch (event.type) {
             case Event::START:
                 {
-                    std::vector<Advisor::vertex_t> path;
+                    std::vector<Advisor::edge_t> path;
                     Link::wavelength_t wl;
                     std::tie(path, wl) = advisor.make_connection(src, dst);
                     // Wavelength is Link::NONE on failure

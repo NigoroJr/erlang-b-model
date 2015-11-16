@@ -3,13 +3,11 @@
 
 #include <algorithm>
 #include <iterator>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 class Link {
 public:
-    using id_t = unsigned;
     using wavelength_t = unsigned;
     using Wavelengths = std::unordered_set<wavelength_t>;
 
@@ -31,8 +29,8 @@ public:
      * \param[in] has_converter whether or not this node has a wavelength
      *            converter. Defaults to false.
      */
-    Link(const id_t id, const unsigned num_links, bool has_converter = false);
-    Link(const id_t id, const int num_links, bool has_converter = false);
+    Link(const unsigned num_links, bool has_converter = false);
+    Link(const int num_links, bool has_converter = false);
 
     /**
      * Creates a node with links of given wavelengths.
@@ -45,9 +43,8 @@ public:
      * Note: Implementation here because of template linking error
      */
     template<typename T>
-    Link(const id_t id, const T& wavelengths, bool has_converter = false)
-        : id_{id}
-        , wavelengths_{wavelengths.begin(), wavelengths.end()}
+    Link(const T& wavelengths, bool has_converter = false)
+        : wavelengths_{wavelengths.begin(), wavelengths.end()}
         , has_converter_{has_converter}
     { }
 
@@ -68,9 +65,6 @@ public:
     Link&
     operator=(Link&& other);
     /* }}} */
-
-    id_t
-    id() const;
 
     /**
      * Checks if the given wavelength can be used or not.
@@ -131,18 +125,12 @@ public:
     has_converter() const;
 
 private:
-    id_t id_;
     Wavelengths wavelengths_;
     Wavelengths used_;
     bool has_converter_;
 };
 
 /* Inlined methods */
-inline Link::id_t
-Link::id() const {
-    return id_;
-}
-
 inline const Link::Wavelengths&
 Link::wavelengths() const {
     return wavelengths_;
