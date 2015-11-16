@@ -15,7 +15,7 @@ Advisor::Advisor(const Graph& nodes,
     : lambda{lambda}
     , duration_mean{duration_mean}
     , nodes{nodes}
-    , u_dist{0, static_cast<Node::id_t>(boost::num_vertices(nodes) - 1)}
+    , u_dist{0, static_cast<vertex_t>(boost::num_vertices(nodes) - 1)}
     , arrival_dist{lambda}
     , duration_dist{duration_mean}
 { }
@@ -71,10 +71,10 @@ Advisor::operator=(Advisor&& other) {
 }
 /* }}} */
 
-std::pair<Node::id_t, Node::id_t>
+std::pair<vertex_t, vertex_t>
 Advisor::get_nodes() {
-    const Node::id_t a = u_dist(rgen);
-    Node::id_t b = u_dist(rgen);
+    const vertex_t a = u_dist(rgen);
+    vertex_t b = u_dist(rgen);
     while (a == b) {
         b = u_dist(rgen);
     }
@@ -91,13 +91,8 @@ Advisor::get_duration() {
     return duration_dist(rgen);
 }
 
-std::pair<std::vector<vertex_t>, Node::wavelength_t>
-Advisor::path_between(Node::id_t a, Node::id_t b) {
-    const unsigned num_nodes = boost::num_vertices(nodes);
-    if (a >= num_nodes || b >= num_nodes || num_nodes < 2) {
-        return std::make_pair(std::vector<vertex_t>(), Node::NONE);
-    }
-
+std::pair<std::vector<edge_t>, Link::wavelength_t>
+Advisor::path_between(vertex_t a, vertex_t b) {
     using FilteredGraph = boost::filtered_graph<
         Graph,
         EdgeFilter<Graph>,
@@ -105,7 +100,17 @@ Advisor::path_between(Node::id_t a, Node::id_t b) {
     >;
 
     // Search for all available wavelengths that a has
-    for (auto&& wl : nodes[a].available_wavelengths()) {
+    std::unordered_set<Link::wavelength_t> possible_wavelengths;
+    boost::graph_traits<Graph>::out_edge_iterator e_b, e_e;
+    // Look at all edges connected to a
+    std::tie(e_b, e_e) = boost::out_edges(a, nodes);
+    for (auto it = e_b; it != e_e; it++) {
+        for (const Link::wavelength_t wl : nodes[*it].available_wavelengths()) {
+            possible_wavelengths.insert(wl);
+        }
+    }
+
+    for (const Link::wavelength_t wl : possible_wavelengths) {
         bool has_path = true;
 
         std::vector<vertex_t> predecessors;
@@ -145,48 +150,60 @@ Advisor::path_between(Node::id_t a, Node::id_t b) {
         // Add the source
         path.insert(path.begin(), p);
 
-        for (const vertex_t v : path) {
-            if (!nodes[v].can_use(wl)) {
+        // Make path of edges (rather than vertices)
+        std::vector<edge_t> path_edges;
+        for (unsigned i = 0; i < path.size() - 1; i++) {
+            vertex_t src = path[i];
+            vertex_t tgt = path[i + 1];
+
+            edge_t edge;
+            // Ignoring whether it was found or not since the vertices are
+            // based on results from BFS. The edge better exist...
+            std::tie(edge, std::ignore) = boost::edge(src, tgt, nodes);
+            path_edges.push_back(edge);
+            const Link& link = nodes[edge];
+
+            if (!link.can_use(wl)) {
                 has_path = false;
                 break;
             }
         }
 
         if (has_path) {
-            return std::make_pair(path, wl);
+            return std::make_pair(path_edges, wl);
         }
     }
 
-    return std::make_pair(std::vector<vertex_t>(), Node::NONE);
+    return std::make_pair(std::vector<edge_t>(), Link::NONE);
 }
 
 bool
-Advisor::has_path_between(Node::id_t a, Node::id_t b) {
+Advisor::has_path_between(vertex_t a, vertex_t b) {
     auto wl = path_between(a, b).second;
-    return wl != Node::NONE;
+    return wl != Link::NONE;
 }
 
-std::pair<std::vector<vertex_t>, Node::wavelength_t>
-Advisor::make_connection(Node::id_t a, Node::id_t b) {
-    std::vector<vertex_t> path;
-    Node::wavelength_t wl;
+std::pair<std::vector<edge_t>, Link::wavelength_t>
+Advisor::make_connection(vertex_t a, vertex_t b) {
+    std::vector<edge_t> path;
+    Link::wavelength_t wl;
     std::tie(path, wl) = path_between(a, b);
 
-    // Node::NONE on failure
-    if (wl == Node::NONE) {
-        return std::make_pair(std::vector<vertex_t>(), Node::NONE);
+    // Link::NONE on failure
+    if (wl == Link::NONE) {
+        return std::make_pair(std::vector<edge_t>(), Link::NONE);
     }
 
-    for (const vertex_t& vertex : path) {
-        nodes[vertex].lock(wl);
+    for (const edge_t& edge : path) {
+        nodes[edge].lock(wl);
     }
     return std::make_pair(path, wl);
 }
 
 void
-Advisor::remove_connection(const std::vector<vertex_t>& path,
-                           const Node::wavelength_t wl) {
-    for (const vertex_t& vertex : path) {
-        nodes[vertex].release(wl);
+Advisor::remove_connection(const std::vector<edge_t>& path,
+                           const Link::wavelength_t wl) {
+    for (const edge_t& edge : path) {
+        nodes[edge].release(wl);
     }
 }

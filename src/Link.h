@@ -3,13 +3,11 @@
 
 #include <algorithm>
 #include <iterator>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-class Node {
+class Link {
 public:
-    using id_t = unsigned;
     using wavelength_t = unsigned;
     using Wavelengths = std::unordered_set<wavelength_t>;
 
@@ -18,7 +16,7 @@ public:
 
     /* Constructors, Destructor, and Assignment operators {{{ */
     // Default constructor
-    Node();
+    Link();
 
     /**
      * Creates a node with the given number of links.
@@ -31,8 +29,8 @@ public:
      * \param[in] has_converter whether or not this node has a wavelength
      *            converter. Defaults to false.
      */
-    Node(const id_t id, const unsigned num_links, bool has_converter = false);
-    Node(const id_t id, const int num_links, bool has_converter = false);
+    Link(const unsigned num_links, bool has_converter = false);
+    Link(const int num_links, bool has_converter = false);
 
     /**
      * Creates a node with links of given wavelengths.
@@ -45,32 +43,28 @@ public:
      * Note: Implementation here because of template linking error
      */
     template<typename T>
-    Node(const id_t id, const T& wavelengths, bool has_converter = false)
-        : id_{id}
-        , wavelengths_{wavelengths.begin(), wavelengths.end()}
+    Link(const T& wavelengths, bool has_converter = false)
+        : wavelengths_{wavelengths.begin(), wavelengths.end()}
         , has_converter_{has_converter}
     { }
 
     // Copy constructor
-    Node(const Node& other);
+    Link(const Link& other);
 
     // Move constructor
-    Node(Node&& other);
+    Link(Link&& other);
 
     // Destructor
-    ~Node();
+    ~Link();
 
     // Assignment operator
-    Node&
-    operator=(const Node& other);
+    Link&
+    operator=(const Link& other);
 
     // Move assignment operator
-    Node&
-    operator=(Node&& other);
+    Link&
+    operator=(Link&& other);
     /* }}} */
-
-    id_t
-    id() const;
 
     /**
      * Checks if the given wavelength can be used or not.
@@ -131,35 +125,29 @@ public:
     has_converter() const;
 
 private:
-    id_t id_;
     Wavelengths wavelengths_;
     Wavelengths used_;
     bool has_converter_;
 };
 
 /* Inlined methods */
-inline Node::id_t
-Node::id() const {
-    return id_;
-}
-
-inline const Node::Wavelengths&
-Node::wavelengths() const {
+inline const Link::Wavelengths&
+Link::wavelengths() const {
     return wavelengths_;
 }
 
-inline const Node::Wavelengths&
-Node::used_wavelengths() const {
+inline const Link::Wavelengths&
+Link::used_wavelengths() const {
     return used_;
 }
 
 inline unsigned
-Node::num_wavelengths() const {
+Link::num_wavelengths() const {
     return wavelengths_.size();
 }
 
 inline bool
-Node::has_converter() const {
+Link::has_converter() const {
     return has_converter_;
 }
 

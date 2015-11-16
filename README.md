@@ -54,7 +54,6 @@ The following figure shows a sample network with 10 nodes and 20 edges.
 The input file for this network is written as:
 
 ```
-10
 20
 0 5
 1 5
@@ -78,9 +77,8 @@ The input file for this network is written as:
 9 3
 ```
 
-The first two numbers are the number of vertices (nodes) and the number of
-edges, respectively. The `misc/make_connections.rb` script is a utility script
-to generate random vertices and edges.
+The first number is the number of edges. The `misc/make_connections.rb` script
+is a utility script to generate random vertices and edges.
 
 Another input file included is shown in the following figure:
 
