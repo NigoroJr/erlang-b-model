@@ -33,7 +33,7 @@ Event::Event(const Advisor::vertex_t src,
              Type type,
              event_t time,
              std::vector<Advisor::vertex_t> path,
-             Node::wavelength_t wl)
+             Link::wavelength_t wl)
     : src{src}
     , dst{dst}
     , type{type}

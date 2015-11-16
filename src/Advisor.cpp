@@ -15,7 +15,7 @@ Advisor::Advisor(const Graph& nodes,
     : lambda{lambda}
     , duration_mean{duration_mean}
     , nodes{nodes}
-    , u_dist{0, static_cast<Node::id_t>(boost::num_vertices(nodes) - 1)}
+    , u_dist{0, static_cast<Link::id_t>(boost::num_vertices(nodes) - 1)}
     , arrival_dist{lambda}
     , duration_dist{duration_mean}
 { }
@@ -71,10 +71,10 @@ Advisor::operator=(Advisor&& other) {
 }
 /* }}} */
 
-std::pair<Node::id_t, Node::id_t>
+std::pair<Link::id_t, Link::id_t>
 Advisor::get_nodes() {
-    const Node::id_t a = u_dist(rgen);
-    Node::id_t b = u_dist(rgen);
+    const Link::id_t a = u_dist(rgen);
+    Link::id_t b = u_dist(rgen);
     while (a == b) {
         b = u_dist(rgen);
     }
@@ -91,11 +91,11 @@ Advisor::get_duration() {
     return duration_dist(rgen);
 }
 
-std::pair<std::vector<vertex_t>, Node::wavelength_t>
-Advisor::path_between(Node::id_t a, Node::id_t b) {
+std::pair<std::vector<vertex_t>, Link::wavelength_t>
+Advisor::path_between(Link::id_t a, Link::id_t b) {
     const unsigned num_nodes = boost::num_vertices(nodes);
     if (a >= num_nodes || b >= num_nodes || num_nodes < 2) {
-        return std::make_pair(std::vector<vertex_t>(), Node::NONE);
+        return std::make_pair(std::vector<vertex_t>(), Link::NONE);
     }
 
     using FilteredGraph = boost::filtered_graph<
@@ -157,24 +157,24 @@ Advisor::path_between(Node::id_t a, Node::id_t b) {
         }
     }
 
-    return std::make_pair(std::vector<vertex_t>(), Node::NONE);
+    return std::make_pair(std::vector<vertex_t>(), Link::NONE);
 }
 
 bool
-Advisor::has_path_between(Node::id_t a, Node::id_t b) {
+Advisor::has_path_between(Link::id_t a, Link::id_t b) {
     auto wl = path_between(a, b).second;
-    return wl != Node::NONE;
+    return wl != Link::NONE;
 }
 
-std::pair<std::vector<vertex_t>, Node::wavelength_t>
-Advisor::make_connection(Node::id_t a, Node::id_t b) {
+std::pair<std::vector<vertex_t>, Link::wavelength_t>
+Advisor::make_connection(Link::id_t a, Link::id_t b) {
     std::vector<vertex_t> path;
-    Node::wavelength_t wl;
+    Link::wavelength_t wl;
     std::tie(path, wl) = path_between(a, b);
 
-    // Node::NONE on failure
-    if (wl == Node::NONE) {
-        return std::make_pair(std::vector<vertex_t>(), Node::NONE);
+    // Link::NONE on failure
+    if (wl == Link::NONE) {
+        return std::make_pair(std::vector<vertex_t>(), Link::NONE);
     }
 
     for (const vertex_t& vertex : path) {
@@ -185,7 +185,7 @@ Advisor::make_connection(Node::id_t a, Node::id_t b) {
 
 void
 Advisor::remove_connection(const std::vector<vertex_t>& path,
-                           const Node::wavelength_t wl) {
+                           const Link::wavelength_t wl) {
     for (const vertex_t& vertex : path) {
         nodes[vertex].release(wl);
     }

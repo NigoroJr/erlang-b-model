@@ -1,6 +1,6 @@
 #include "Advisor.h"
 #include "Event.h"
-#include "Node.h"
+#include "Link.h"
 
 #include "cxxopts.hpp"
 
@@ -24,7 +24,7 @@ make_graph_from_file(std::istream& is,
     Advisor::Graph g;
 
     for (unsigned i = 0; i < num_vertices; i++) {
-        boost::add_vertex(Node(i, num_links, has_converter), g);
+        boost::add_vertex(Link(i, num_links, has_converter), g);
     }
 
     unsigned a, b;
@@ -99,10 +99,10 @@ simulate(Advisor& advisor,
             case Event::START:
                 {
                     std::vector<Advisor::vertex_t> path;
-                    Node::wavelength_t wl;
+                    Link::wavelength_t wl;
                     std::tie(path, wl) = advisor.make_connection(src, dst);
-                    // Wavelength is Node::NONE on failure
-                    if (wl != Node::NONE) {
+                    // Wavelength is Link::NONE on failure
+                    if (wl != Link::NONE) {
                         // Schedule finishing of connection
                         auto e = Event{event.src, event.dst, Event::END,
                             now + advisor.get_duration(), path, wl};

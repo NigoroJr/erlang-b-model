@@ -2,7 +2,7 @@
 #define EVENT_H_
 
 #include "Advisor.h"
-#include "Node.h"
+#include "Link.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@ struct Event {
     using event_t = double;
 
     static constexpr event_t UNSET = -1;
-    static const Node::wavelength_t WL_UNSET = 0;
+    static const Link::wavelength_t WL_UNSET = 0;
 
     enum Type { START, END, BLOCK, DUMMY };
 
@@ -29,7 +29,7 @@ struct Event {
           Type type,
           event_t time,
           std::vector<Advisor::vertex_t> path,
-          Node::wavelength_t wl = WL_UNSET);
+          Link::wavelength_t wl = WL_UNSET);
 
     // Copy constructor
     Event(const Event& other);
@@ -64,7 +64,7 @@ struct Event {
     Type type;
     event_t time;
     std::vector<Advisor::vertex_t> path;
-    Node::wavelength_t wavelength;
+    Link::wavelength_t wavelength;
 };
 
 #endif /* end of include guard */

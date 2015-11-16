@@ -3,7 +3,7 @@
 
 #include "Advisor.h"
 #include "Event.h"
-#include "Node.h"
+#include "Link.h"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
@@ -23,11 +23,11 @@ using edge_t = Advisor::edge_t;
 Graph
 make_crossing_graph(const unsigned num_links) {
     Graph g;
-    auto n0 = boost::add_vertex(Node(0, num_links), g);
-    auto n1 = boost::add_vertex(Node(1, num_links), g);
-    auto n2 = boost::add_vertex(Node(2, num_links), g);
-    auto n3 = boost::add_vertex(Node(3, num_links), g);
-    auto n4 = boost::add_vertex(Node(4, num_links), g);
+    auto n0 = boost::add_vertex(Link(0, num_links), g);
+    auto n1 = boost::add_vertex(Link(1, num_links), g);
+    auto n2 = boost::add_vertex(Link(2, num_links), g);
+    auto n3 = boost::add_vertex(Link(3, num_links), g);
+    auto n4 = boost::add_vertex(Link(4, num_links), g);
 
     boost::add_edge(n0, n2, g);
     boost::add_edge(n1, n2, g);
@@ -63,7 +63,7 @@ make_graph(const unsigned num_links) {
     Graph g;
     // See `connections' variable. It is based on 10 vertices.
     for (unsigned i = 0; i < 10; i++) {
-        boost::add_vertex(Node(i, num_links), g);
+        boost::add_vertex(Link(i, num_links), g);
     }
 
     std::vector<std::pair<int, int>> connections = {
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(advisor_path_between_test) {
 
     auto g = make_crossing_graph(1);
     Advisor a2{g, lambda, duration_mean};
-    Node::wavelength_t wl;
+    Link::wavelength_t wl;
     std::tie(path, wl) = a2.path_between(0, 4);
     ok = path == decltype(path){0, 2, 4};
     BOOST_REQUIRE(ok);
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(advisor_path_between_test) {
     a2.make_connection(0, 4);
 
     std::tie(path, wl) = a2.path_between(1, 3);
-    BOOST_CHECK_EQUAL(wl, Node::NONE);
+    BOOST_CHECK_EQUAL(wl, Link::NONE);
 
     auto g2 = make_diamond_graph(1);
 
@@ -198,8 +198,8 @@ BOOST_AUTO_TEST_CASE(advisor_make_connection_test) {
 
     // Only two nodes with two links each
     nodes = Graph();
-    boost::add_vertex(Node(0, 2), nodes);
-    boost::add_vertex(Node(1, 2), nodes);
+    boost::add_vertex(Link(0, 2), nodes);
+    boost::add_vertex(Link(1, 2), nodes);
     boost::add_edge(0, 1, nodes);
     advisor = Advisor{nodes, lambda, duration_mean};
     BOOST_CHECK(advisor.has_path_between(0, 1));
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE(advisor_remove_connection_test) {
     Advisor advisor{nodes, lambda, duration_mean};
 
     std::vector<Advisor::vertex_t> path;
-    Node::wavelength_t wl;
+    Link::wavelength_t wl;
 
     // Normal blocking
     std::tie(path, wl) = advisor.make_connection(0, 4);
@@ -232,8 +232,8 @@ BOOST_AUTO_TEST_CASE(advisor_remove_connection_test) {
 
     // Only two nodes with two links each
     nodes = Graph();
-    boost::add_vertex(Node(0, 2), nodes);
-    boost::add_vertex(Node(1, 2), nodes);
+    boost::add_vertex(Link(0, 2), nodes);
+    boost::add_vertex(Link(1, 2), nodes);
     boost::add_edge(0, 1, nodes);
     advisor = Advisor{nodes, lambda, duration_mean};
     advisor.make_connection(0, 1);

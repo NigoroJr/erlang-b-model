@@ -1,17 +1,17 @@
-#include "Node.h"
+#include "Link.h"
 
-using wavelength_t = Node::wavelength_t;
-using Wavelengths = Node::Wavelengths;
+using wavelength_t = Link::wavelength_t;
+using Wavelengths = Link::Wavelengths;
 
-const Node::wavelength_t Node::NONE = 0;
+const Link::wavelength_t Link::NONE = 0;
 
 /* Constructors, Destructor, and Assignment operators {{{ */
 // Default constructor
-Node::Node()
+Link::Link()
     : id_{0}
 { }
 
-Node::Node(const id_t id, const unsigned num_links, bool has_converter)
+Link::Link(const id_t id, const unsigned num_links, bool has_converter)
     : id_{id}
     , has_converter_{has_converter}
 {
@@ -20,12 +20,12 @@ Node::Node(const id_t id, const unsigned num_links, bool has_converter)
     }
 }
 
-Node::Node(const id_t id, const int num_links, bool has_converter)
-    : Node(id, static_cast<unsigned>(num_links), has_converter)
+Link::Link(const id_t id, const int num_links, bool has_converter)
+    : Link(id, static_cast<unsigned>(num_links), has_converter)
 { }
 
 // Copy constructor
-Node::Node(const Node& other)
+Link::Link(const Link& other)
     : id_{other.id_}
     , wavelengths_{other.wavelengths_}
     , used_{other.used_}
@@ -33,7 +33,7 @@ Node::Node(const Node& other)
 { }
 
 // Move constructor
-Node::Node(Node&& other)
+Link::Link(Link&& other)
     : id_{std::move(other.id_)}
     , wavelengths_{std::move(other.wavelengths_)}
     , used_{std::move(other.used_)}
@@ -41,12 +41,12 @@ Node::Node(Node&& other)
 { }
 
 // Destructor
-Node::~Node()
+Link::~Link()
 { }
 
 // Assignment operator
-Node&
-Node::operator=(const Node& other) {
+Link&
+Link::operator=(const Link& other) {
     id_ = other.id_;
     wavelengths_ = other.wavelengths_;
     used_ = other.used_;
@@ -55,8 +55,8 @@ Node::operator=(const Node& other) {
 }
 
 // Move assignment operator
-Node&
-Node::operator=(Node&& other) {
+Link&
+Link::operator=(Link&& other) {
     id_ = std::move(other.id_);
     wavelengths_ = std::move(other.wavelengths_);
     used_ = std::move(other.used_);
@@ -66,7 +66,7 @@ Node::operator=(Node&& other) {
 /* }}} */
 
 bool
-Node::can_use(const wavelength_t wl) const {
+Link::can_use(const wavelength_t wl) const {
     // A wavelength that doesn't exist
     if (wavelengths_.count(wl) == 0) {
         return false;
@@ -80,7 +80,7 @@ Node::can_use(const wavelength_t wl) const {
 }
 
 bool
-Node::lock(const wavelength_t wl) {
+Link::lock(const wavelength_t wl) {
     if (!can_use(wl)) {
         return false;
     }
@@ -90,12 +90,12 @@ Node::lock(const wavelength_t wl) {
 }
 
 void
-Node::release(const wavelength_t wl) {
+Link::release(const wavelength_t wl) {
     used_.erase(wl);
 }
 
 Wavelengths
-Node::available_wavelengths() const {
+Link::available_wavelengths() const {
     std::unordered_set<wavelength_t> available;
 
     for (const wavelength_t wl : wavelengths_) {
