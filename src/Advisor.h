@@ -25,16 +25,8 @@ struct EdgeFilter {
 
     template<typename Edge>
     bool operator()(const Edge& e) const {
-        const auto& src = boost::source(e, g);
-        const auto& tgt = boost::target(e, g);
-        typename boost::graph_traits<Graph>::edge_descriptor edge;
-        bool found;
-        std::tie(edge, found) = boost::edge(src, tgt, g);
-        if (found) {
-            const Link& link = g[edge];
-            return link.can_use(wl);
-        }
-        return false;
+        const Link& link = g[e];
+        return link.can_use(wl);
     }
 
     Graph g;
