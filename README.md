@@ -36,6 +36,17 @@ make -j5
 For unit tests, run `ctest` in the `build` directory.
 
 ## Usage
+The program is invoked with:
+
+```sh
+PROGRAM_NAME <input file> <num wavelengths>
+```
+
+Running the program with option `-h` or `--help` shows the available command
+line options. The number of wavelengths is the number of servers available for
+one node. The more wavelengths there are, the lower the blocking probability
+gets.
+
 The following figure shows a sample network with 10 nodes and 20 edges.
 
 ![Sample Network Diagram](./samples/sample.png)
@@ -78,16 +89,8 @@ Another input file included is shown in the following figure:
 In this network, connections are always between the same two nodes. Thus, the
 Erlang B formula can be used to verify the results of the simulation.
 
-The program is invoked with:
 
-```sh
-PROGRAM_NAME <input file> <num wavelengths>
-```
 
-Running the program with option `-h` or `--help` shows the available command
-line options. The number of wavelengths is the number of servers available for
-one node. The more wavelengths there are, the lower the blocking probability
-gets.
 
 ## Thanks
 [cxxopts](https://github.com/jarro2783/cxxopts) for command line option
