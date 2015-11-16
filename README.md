@@ -89,8 +89,12 @@ Another input file included is shown in the following figure:
 In this network, connections are always between the same two nodes. Thus, the
 Erlang B formula can be used to verify the results of the simulation.
 
+The following figure shows a network with ten nodes connected in a bus
+topology.
 
+![Ten-node network](./samples/ten_nodes.png)
 
+No theoretical value can be calculated, but this is included just in case.
 
 ## Thanks
 [cxxopts](https://github.com/jarro2783/cxxopts) for command line option
